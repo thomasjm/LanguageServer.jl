@@ -1,5 +1,5 @@
-import StaticLint: hasfile, canloadfile, loadfile, setfile, getfile, getsymbols, getsymbolextendeds, getenv
 import StaticLint: getpath, getroot, setroot, getcst, setcst, semantic_pass, getserver, setserver
+import StaticLint: hasfile, canloadfile, loadfile, setfile, getfile, getsymbols, getsymbolextendeds, getenv
 hasfile(server::LanguageServerInstance, path::String) = !isempty(path) && hasdocument(server, filepath2uri(path))
 function canloadfile(server::LanguageServerInstance, path::String)
     try
@@ -72,6 +72,7 @@ function setserver(file::Document, server::LanguageServerInstance)
 end
 
 function lint!(doc, server)
+    @info "Linting doc!!!!!!!!!!! $doc"
     StaticLint.check_all(getcst(doc), server.lint_options, getenv(doc, server))
     empty!(doc.diagnostics)
     mark_errors(doc, doc.diagnostics)
