@@ -7,6 +7,7 @@ function textDocument_didOpen_notification(params::DidOpenTextDocumentParams, se
     else
         doc = Document(TextDocument(uri, params.textDocument.text, params.textDocument.version, params.textDocument.languageId), false, server)
         setdocument!(server, uri, doc)
+        @debug "server.workspaceFolders in didOpen: $(server.workspaceFolders)"
         doc._workspace_file = any(i -> startswith(string(uri), string(filepath2uri(i))), server.workspaceFolders)
         set_open_in_editor(doc, true)
 

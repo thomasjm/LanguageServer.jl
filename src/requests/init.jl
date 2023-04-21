@@ -142,12 +142,14 @@ end
 function initialize_request(params::InitializeParams, server::LanguageServerInstance, conn)
     # Only look at rootUri and rootPath if the client doesn't support workspaceFolders
     if !ismissing(params.capabilities.workspace) && (ismissing(params.capabilities.workspace.workspaceFolders) || params.capabilities.workspace.workspaceFolders == false)
+        @debug "Client doesn't support workspace folders"
         if !(params.rootUri isa Nothing)
             push!(server.workspaceFolders, uri2filepath(params.rootUri))
         elseif !(params.rootPath isa Nothing)
             push!(server.workspaceFolders,  params.rootPath)
         end
     elseif (params.workspaceFolders !== nothing) & (params.workspaceFolders !== missing)
+        @debug "Client does support workspace folders"
         for wksp in params.workspaceFolders
             if wksp.uri !== nothing
                 fpath = uri2filepath(wksp.uri)
@@ -157,6 +159,7 @@ function initialize_request(params::InitializeParams, server::LanguageServerInst
             end
         end
     end
+    @debug "Decided on workspace folders: $(server.workspaceFolders)"
 
     server.clientCapabilities = params.capabilities
     server.clientInfo = params.clientInfo
