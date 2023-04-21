@@ -212,6 +212,11 @@ end
 
 
 function publish_diagnostics(doc::Document, server, conn)
+    @debug "Beginning of publish_diagnostics"
+    @debug "server.runlinter: $(server.runlinter)"
+    @debug "server.symbol_store_ready: $(server.symbol_store_ready)"
+    @debug "is_workspace_file(doc): $(is_workspace_file(doc))"
+    @debug "isunsavedfile(doc): $(isunsavedfile(doc))"
     diagnostics = if server.runlinter && server.symbol_store_ready && (is_workspace_file(doc) || isunsavedfile(doc))
         pkgpath = getpath(doc)
         if any(is_in_target_dir_of_package.(Ref(pkgpath), server.lint_disableddirs))
@@ -221,6 +226,7 @@ function publish_diagnostics(doc::Document, server, conn)
     else
         Diagnostic[]
     end
+    @debug "num diagnostics: $(length(diagnostics))"
     text_document = get_text_document(doc)
     params = PublishDiagnosticsParams(get_uri(text_document), get_version(text_document), diagnostics)
     JSONRPC.send(conn, textDocument_publishDiagnostics_notification_type, params)
